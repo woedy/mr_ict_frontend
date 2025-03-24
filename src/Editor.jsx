@@ -3,12 +3,11 @@ import Editor from '@monaco-editor/react';
 import axios from 'axios';
 import _ from 'lodash';
 
-function CodeEditor2() {
+function CodeEditor({ isRecording }) {
   const editorRef = useRef(null);
   const [cursorPosition, setCursorPosition] = useState({ lineNumber: 1, column: 1 });
   const [scrollPosition, setScrollPosition] = useState({ scrollTop: 0, scrollLeft: 0 });
   const [code, setCode] = useState("// your code here");
-  const [isRecording, setIsRecording] = useState(false);
   const startTimeRef = useRef(null);
 
   const lastSnapshotRef = useRef({
@@ -23,16 +22,15 @@ function CodeEditor2() {
     return (Date.now() - startTimeRef.current) / 1000; // Convert to seconds
   }, []);
 
-  const startRecording = () => {
-    startTimeRef.current = Date.now();
-    setIsRecording(true);
-    sendSnapshotNow(0); // Take initial snapshot at time 0
-  };
-
-  const stopRecording = () => {
-    setIsRecording(false);
-    sendSnapshotNow(getCurrentTimestamp()); // Take final snapshot
-  };
+  // Make sure that the snapshot is saved when the recording starts or stops
+  useEffect(() => {
+    if (isRecording) {
+      startTimeRef.current = Date.now();
+      sendSnapshotNow(0); // Take initial snapshot at time 0
+    } else {
+      sendSnapshotNow(getCurrentTimestamp()); // Take final snapshot when stopped
+    }
+  }, [isRecording]); // Only trigger when isRecording state changes
 
   // Track previous cursor position and scroll position to avoid redundant updates
   const prevCursorPosition = useRef(cursorPosition);
@@ -170,17 +168,17 @@ function CodeEditor2() {
         <p>Time Elapsed: {isRecording ? getCurrentTimestamp().toFixed(1) + 's' : '0.0s'}</p>
 
         {!isRecording ? (
-          <button onClick={startRecording} className="start-btn">
+          <button className="px-4 py-2 bg-blue-500 text-white rounded">
             Start Recording
           </button>
         ) : (
-          <button onClick={stopRecording} className="stop-btn">
+          <button className="px-4 py-2 bg-blue-500 text-white rounded">
             Stop Recording
           </button>
         )}
 
         {isRecording && (
-          <button onClick={() => sendSnapshotNow()} className="snapshot-btn">
+          <button onClick={() => sendSnapshotNow()} className="px-4 py-2 bg-blue-500 text-white rounded">
             Save Snapshot Now
           </button>
         )}
@@ -189,4 +187,4 @@ function CodeEditor2() {
   );
 }
 
-export default CodeEditor2;
+export default CodeEditor;

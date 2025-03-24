@@ -1,9 +1,9 @@
-import CodeEditor2 from "./Component/Editor";
+import ScreenRecorder from "./Recorder";
 
 
 function App() {
   return (
-    <CodeEditor2 />
+    <ScreenRecorder />
   );
 }
 

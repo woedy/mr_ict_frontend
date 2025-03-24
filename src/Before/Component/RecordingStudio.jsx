@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import CodeEditor from './CodeEditor';
-import { startRecording, stopRecording } from '../utils/screenRecorder';
-import api from '../services/api';
+import { startRecording, stopRecording } from '../../utils/screenRecorder';
+import api from '../../services/api';
 
 const RecordingStudio = () => {
   const [isRecording, setIsRecording] = useState(false);
