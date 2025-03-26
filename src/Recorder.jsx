@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import axios from 'axios'; // Axios for making HTTP requests
 import CodeEditor from './Editor';
 
@@ -7,15 +7,27 @@ const ScreenRecorder = ({}) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isScreenRecordingStarted, setIsScreenRecordingStarted] = useState(false); // Track when screen recording has actually started
   const [recordingTitle, setRecordingTitle] = useState('New Recording');
+  const [recordingDescription, setRecordingDescription] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [customTimestamp, setCustomTimestamp] = useState(0);
 
   const mediaRecorderRef = useRef(null);
   const videoRef = useRef(null);
   const recordedChunksRef = useRef([]);
   const mediaStreamRef = useRef(null);
+  const startTimeRef = useRef(null);
+
+
+  const getCurrentTimestamp = useCallback(() => {
+      if (!startTimeRef.current) return 0;
+      return (Date.now() - startTimeRef.current) / 1000; // Convert to seconds
+  }, []);
+  
 
   useEffect(() => {
     if (isRecording) {
+    
+
       const startRecording = async () => {
         try {
           // Get access to the user's screen
@@ -60,6 +72,11 @@ const ScreenRecorder = ({}) => {
           setIsScreenRecordingStarted(true); // Screen recording has started
           setPermissionError(false); // Reset any previous error
           setIsRecording(true);
+          console.log(startTimeRef.current);
+          startTimeRef.current = Date.now();
+          console.log(startTimeRef.current);
+
+
         } catch (err) {
           console.error('Error starting recording:', err);
           setPermissionError(true);
@@ -77,6 +94,7 @@ const ScreenRecorder = ({}) => {
           mediaStreamRef.current.getTracks().forEach((track) => track.stop()); // Stop all media tracks
         }
         setIsRecording(false);
+          startTimeRef.current = getCurrentTimestamp();
       };
 
       stopRecording();
@@ -93,9 +111,14 @@ const ScreenRecorder = ({}) => {
   }, [isRecording]);
 
   const sendVideoToServer = async (blob) => {
+    
     try {
+    //console.log(startTimeRef.current);
       const formData = new FormData();
       formData.append('video_file', blob, 'recording.webm');
+      formData.append('title', recordingTitle);
+      formData.append('description', recordingDescription);
+      formData.append('duration', startTimeRef.current);
 
       const response = await axios.post('http://localhost:8000/api/upload/', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -128,13 +151,24 @@ const ScreenRecorder = ({}) => {
           <div className="flex space-x-2">
             {!isRecording ? (
               <>
-                <input
+              <div>
+              <input
                   type="text"
                   value={recordingTitle}
                   onChange={(e) => setRecordingTitle(e.target.value)}
                   className="border rounded px-3 py-2"
                   placeholder="Recording Title"
                 />
+
+              <input
+                  type="text"
+                  value={recordingDescription}
+                  onChange={(e) => setRecordingDescription(e.target.value)}
+                  className="border rounded px-3 py-2"
+                  placeholder="Description"
+                />
+              </div>
+         
                 <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded" onClick={handleStartRecording}>
                   Start Recording
                 </button>
@@ -155,7 +189,7 @@ const ScreenRecorder = ({}) => {
           </div>
         </div>
 
-        <CodeEditor isRecording={isRecording && isScreenRecordingStarted} />
+        <CodeEditor isRecording={isRecording && isScreenRecordingStarted} title={recordingTitle}/>
       </div>
     </>
   );

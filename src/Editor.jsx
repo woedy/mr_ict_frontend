@@ -3,7 +3,7 @@ import Editor from '@monaco-editor/react';
 import axios from 'axios';
 import _ from 'lodash';
 
-function CodeEditor({ isRecording }) {
+function CodeEditor({ isRecording, title }) {
   const editorRef = useRef(null);
   const [cursorPosition, setCursorPosition] = useState({ lineNumber: 1, column: 1 });
   const [scrollPosition, setScrollPosition] = useState({ scrollTop: 0, scrollLeft: 0 });
@@ -113,6 +113,7 @@ function CodeEditor({ isRecording }) {
     const timestamp = customTimestamp !== null ? customTimestamp : getCurrentTimestamp();
 
     const snapshotData = {
+      title: title,
       code: currentCode,
       cursorPosition: cursorPosition,
       scrollPosition: scrollPosition,
