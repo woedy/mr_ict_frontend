@@ -5,13 +5,13 @@ import TuSidebar from './TuSideBar';
 import TuEditor from './TuEditor';
 import TuStatusBar from './TuStatus';
 
-const TutorialPage = () => {
+const TutorialPage = ({value, onEditorInteraction}) => {
   return (
     <div className="flex flex-col h-screen">
       <TuHeader />
       <div className="flex flex-1">
         <TuSidebar />
-        <TuEditor />
+        <TuEditor value={value} onEditorInteraction={onEditorInteraction}/>
       </div>
       <TuStatusBar />
     </div>

@@ -3,194 +3,413 @@ import Editor from '@monaco-editor/react';
 import TutorialPage from './RecPlayEditor/TutorialPage';
 import { Link } from 'react-router-dom';
 import Logo from '../../images/logo/coat.png';
+import axios from 'axios';
+import DraggableWindow from './RecPlayEditor/DraggableWindow';
+import DraggableVideoWindow from './RecPlayEditor/DraggableVideoWindow';
 
+const RecordVideoPlayer = () => {
+  // State for video and code data
+  const [videoUrl, setVideoUrl] = useState('');
+  const [codeTimelineData, setCodeTimelineData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [videoError, setVideoError] = useState(null);
 
-const formatTime = (seconds) => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = Math.floor(seconds % 60);
-  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-};
-
-const RecordVideoPlayer = ({ }) => {
-  const videoRef = useRef(null);
+  // Player state
+  const [currentCode, setCurrentCode] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [canPlay, setCanPlay] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [seekValue, setSeekValue] = useState(0);
-  const [editorCode, setEditorCode] = useState('// Write your code here');
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const videoRef = useRef(null);
+  const requestAnimationRef = useRef(null);
 
- // const videoUrl = 'http://localhost:8000/media/recordings/Screen_Recording_2025-03-28_233124.mp4'; // Adjust your Django video URL here
-  const videoUrl = 'http://localhost:8000/media/recordings/recording_x264.mp4'; // Adjust your Django video URL here
-
+  // Fetch data from server
   useEffect(() => {
-    const video = videoRef.current;
-    
-    if (!video) return;
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        // Replace with your actual API endpoint
+        const response = await axios.get('http://localhost:8000/api/tutorial/');
 
-    const handleLoadedMetadata = () => {
-      if (video.duration && isFinite(video.duration)) {
-        setDuration(video.duration);
-        setIsVideoLoaded(true);
+        setVideoUrl('http://localhost:8000' + response.data.data.video_url);
+
+        // Sort code snippets by timestamp to ensure proper sequencing
+        const sortedSnippets = [...response.data.data.code_snippets].sort(
+          (a, b) => a.timestamp - b.timestamp,
+        );
+        setCodeTimelineData(sortedSnippets);
+
+        // Set initial code to the first snippet
+        if (sortedSnippets.length > 0) {
+          setCurrentCode(sortedSnippets[0].code_content);
+        }
+
+        setIsLoading(false);
+      } catch (err) {
+        setError('Failed to load tutorial data');
+        setIsLoading(false);
+        console.error('Error fetching data:', err);
       }
     };
 
-    const updateTime = () => {
-      if (video.duration && isFinite(video.duration)) {
-        setCurrentTime(video.currentTime);
-        setSeekValue((video.currentTime / video.duration) * 100);
-      }
-    };
+    fetchData();
+  }, []);
 
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
-    video.addEventListener('timeupdate', updateTime);
+  // Handle code synchronization based on current time
+  const syncCodeWithTime = (time) => {
+    if (!codeTimelineData.length) return;
+
+    // Find the appropriate code snippet for the current time
+    let appropriateSnippet = codeTimelineData[0];
+
+    for (let i = 0; i < codeTimelineData.length; i++) {
+      const snippet = codeTimelineData[i];
+      if (snippet.timestamp <= time) {
+        appropriateSnippet = snippet;
+      } else {
+        break;
+      }
+    }
+
+    setCurrentCode(appropriateSnippet.code_content);
+  };
+
+  // Animation frame loop for smooth time tracking
+  const updateTimeDisplay = () => {
+    if (videoRef.current && isPlaying) {
+      const newTime = videoRef.current.currentTime;
+      setCurrentTime(newTime);
+      syncCodeWithTime(newTime);
+      requestAnimationRef.current = requestAnimationFrame(updateTimeDisplay);
+    }
+  };
+
+  // Start and stop the animation frame loop based on play state
+  useEffect(() => {
+    if (isPlaying) {
+      requestAnimationRef.current = requestAnimationFrame(updateTimeDisplay);
+    } else if (requestAnimationRef.current) {
+      cancelAnimationFrame(requestAnimationRef.current);
+    }
 
     return () => {
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      video.removeEventListener('timeupdate', updateTime);
+      if (requestAnimationRef.current) {
+        cancelAnimationFrame(requestAnimationRef.current);
+      }
     };
-  }, [videoUrl]);
+  }, [isPlaying, codeTimelineData]);
 
-  const handlePlayPause = () => {
+  // Handle play/pause for both video and code
+  const togglePlayPause = () => {
+    if (!videoRef.current || !canPlay) return;
+
+    try {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        // Important: Sync code before starting playback
+        syncCodeWithTime(videoRef.current.currentTime);
+
+        const playPromise = videoRef.current.play();
+
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              // Playback started successfully
+              setVideoError(null);
+            })
+            .catch((err) => {
+              // Playback failed
+              setVideoError(`Failed to play video: ${err.message}`);
+              setIsPlaying(false);
+              console.error('Video playback error:', err);
+            });
+        }
+      }
+
+      setIsPlaying(!isPlaying);
+    } catch (err) {
+      setVideoError(`Error controlling video: ${err.message}`);
+      console.error('Video control error:', err);
+    }
+  };
+
+  // Handle seeking in the video
+  const handleSeek = (e) => {
+    if (!videoRef.current) return;
+
+    const seekTime = parseFloat(e.target.value);
+    videoRef.current.currentTime = seekTime;
+    setCurrentTime(seekTime);
+
+    // Immediately update code to match the new position
+    syncCodeWithTime(seekTime);
+  };
+
+  // Sync play/pause state with video events
+  const handleVideoPlay = () => {
+    setIsPlaying(true);
+  };
+
+  const handleVideoPause = () => {
+    setIsPlaying(false);
+  };
+
+  const handleVideoEnded = () => {
+    setIsPlaying(false);
+  };
+
+  // Handle video duration update
+  const handleLoadedMetadata = () => {
+    if (videoRef.current) {
+      setDuration(videoRef.current.duration);
+    }
+  };
+
+  // Handle timeupdate event to keep UI in sync with video position
+  const handleTimeUpdate = () => {
+    if (videoRef.current && !isPlaying) {
+      setCurrentTime(videoRef.current.currentTime);
+      syncCodeWithTime(videoRef.current.currentTime);
+    }
+  };
+
+  // Handle video can play event
+  const handleCanPlay = () => {
+    setCanPlay(true);
+    setVideoError(null);
+
+    if (videoRef.current) {
+      setDuration(videoRef.current.duration);
+    }
+
+    // Initial sync on load
+    syncCodeWithTime(videoRef.current?.currentTime || 0);
+  };
+
+  // Handle video error
+  const handleVideoError = (e) => {
     const video = videoRef.current;
-    if (!video) return;
+    let errorMessage = 'Unknown video error';
 
-    if (video.paused) {
-      video.play()
-        .then(() => {
-          setIsPlaying(true);
-        })
-        .catch(error => {
-          console.error('Error playing video:', error);
-          setIsPlaying(false);
-        });
-    } else {
-      video.pause();
+    if (video && video.error) {
+      switch (video.error.code) {
+        case 1:
+          errorMessage = 'Video loading aborted';
+          break;
+        case 2:
+          errorMessage = 'Network error, check your connection';
+          break;
+        case 3:
+          errorMessage = 'Video decoding failed - format may not be supported';
+          break;
+        case 4:
+          errorMessage = 'Video not found or access denied';
+          break;
+        default:
+          errorMessage = `Video error: ${video.error.message}`;
+      }
+    }
+
+    setVideoError(errorMessage);
+    setCanPlay(false);
+    console.error('Video error:', errorMessage);
+  };
+
+  // Format time as MM:SS
+  const formatTime = (seconds) => {
+    if (isNaN(seconds) || seconds === null || seconds === undefined)
+      return '00:00';
+    const mins = Math.floor(seconds / 60)
+      .toString()
+      .padStart(2, '0');
+    const secs = Math.floor(seconds % 60)
+      .toString()
+      .padStart(2, '0');
+    return `${mins}:${secs}`;
+  };
+
+  // Calculate seek bar gradient percentage
+  const calculateSeekPercentage = () => {
+    if (duration <= 0) return 0;
+    return (currentTime / duration) * 100;
+  };
+
+  // Add a pause function
+  const pauseVideo = () => {
+    if (videoRef.current && isPlaying) {
+      videoRef.current.pause();
       setIsPlaying(false);
     }
   };
 
-  const handleSeek = (e) => {
-    const video = videoRef.current;
-    if (!video) return;
+  if (isLoading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center p-4">
+        <div className="text-lg text-gray-600">Loading tutorial...</div>
+      </div>
+    );
+  }
 
-    const value = e.target.value;
-    setSeekValue(value);
-    video.currentTime = (value / 100) * video.duration;
-  };
-
-  const handleEditorChange = (value) => {
-    setEditorCode(value);
-  };
+  if (error) {
+    return (
+      <div className="w-full h-full flex items-center justify-center p-4">
+        <div className="text-lg text-red-600">{error}</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="relative w-full h-screen flex flex-col">
-      {/* Content Area */}
-      <div className="flex-grow relative">
-        <div className="absolute inset-0 flex">
-          {/* Video Container */}
-          <div className={`w-full h-full  relative`}>
-            {/* Header - Positioned over the video */}
-            <header className="bg-primary text-white p-3 flex justify-between items-center absolute top-0 left-0 right-0 z-20">
-              {/* Left Section: Logo and course info */}
-              <div className="flex items-center space-x-4">
-                <Link to={'/dashboard'}>
-                  <img className="h-10" src={Logo} alt="Logo" />
-                </Link>
-  
-                <div className="flex items-center space-x-1">
-                  <div className="font-bold text-lg text-black">HTML / </div>
-                  <p className="text-black text-sm">Introduction to HTML</p>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <button className="bg-red-600 text-white p-2 text-sm rounded-md hover:bg-red-700 transition-colors">
-                    Discard
-                  </button>
-                  <button className="bg-green text-white p-2 text-sm rounded-md hover:bg-green-700 transition-colors">
-                    Save
-                  </button>
-                </div>
-              </div>
-  
-              {/* Middle Section: Timer */}
-              <div className="flex items-center space-x-4">
-                <button className="bg-bodydark1 text-black p-2 rounded-md shadow-md text-sm">
-                  02:34 / 03:44
-                </button>
-              </div>
-  
-              {/* Right Section: RUN button */}
-              <div className="flex items-center space-x-4">
-                <button className="bg-green text-white p-2 text-sm rounded-md hover:bg-green-700 transition-colors">
-                  RUN
-                </button>
-              </div>
-            </header>
-  
-            {/* Video Element */}
-            <video
-              ref={videoRef}
-              className="w-full h-full object-cover"
-              src={videoUrl}
-              onClick={handlePlayPause}
-              playsInline
-              muted
-            />
-          </div>
-  
-          {/* Editor Overlay */}
-          {!isPlaying && (
-            <div className="absolute inset-0 z-10">
-              <TutorialPage />
+    <div className="flex flex-col h-screen max-h-screen overflow-hidden">
+      {/* Header - Fixed at top */}
+      <header className="bg-primary text-white p-3 flex justify-between items-center absolute top-0 left-0 right-0 z-20">
+        {/* Left Section: Logo and course info */}
+        <div className="flex items-center space-x-4">
+          <Link to={'/dashboard'}>
+            <img className="h-10" src={Logo} alt="Logo" />
+          </Link>
+        </div>
+      </header>
+
+      {/* Main content area - Fills available space */}
+      <div className="flex-grow relative overflow-hidden">
+        {/* Video container */}
+        <div className="absolute inset-0 translate-y-[-11px]">
+          <video
+            ref={videoRef}
+            className="w-full h-full object-cover"
+            src={videoUrl}
+            onPlay={handleVideoPlay}
+            onPause={handleVideoPause}
+            onEnded={handleVideoEnded}
+            onCanPlay={handleCanPlay}
+            onLoadedMetadata={handleLoadedMetadata}
+            onTimeUpdate={handleTimeUpdate}
+            onError={handleVideoError}
+            controls={false}
+            playsInline
+            preload="auto"
+          >
+            Your browser does not support the video tag.
+            <source src={videoUrl} type="video/mp4" />
+            <source src={videoUrl} type="video/webm" />
+            <source src={videoUrl} type="video/ogg" />
+          </video>
+        </div>
+
+        {/* Video error overlay */}
+        {videoError && (
+          <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-30">
+            <div className="text-white text-center">
+              <p className="font-medium mb-2">Video Error</p>
+              <p className="text-sm">{videoError}</p>
+              <p className="text-xs mt-2">
+                Try a different browser or check the video format
+              </p>
+              <button
+                className="mt-3 bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
+                onClick={() => {
+                  if (videoRef.current) {
+                    videoRef.current.load(); // Reload the video element
+                    setVideoError(null);
+                  }
+                }}
+              >
+                Try reloading
+              </button>
             </div>
-          )}
+          </div>
+        )}
+
+        {/* Editor overlay */}
+        <div
+          className={`absolute inset-0 z-20 ${
+            isPlaying ? 'opacity-25' : 'opacity-100'
+          } transition-opacity duration-300`}
+        >
+          <TutorialPage value={currentCode} onEditorInteraction={pauseVideo} />
         </div>
       </div>
-  
-      {/* Controls - Always Visible */}
-      <div className="absolute bottom-4 left-0 right-0 flex items-center justify-between p-4 bg-black bg-opacity-50 z-10">
+
+      {/* Controls - Fixed at bottom */}
+      <div className="bg-black bg-opacity-50 p-3 flex items-center space-x-4 z-30 relative">
         {/* Play/Pause Button */}
         <button
-          className="text-white text-2xl"
-          onClick={handlePlayPause}
-          disabled={!isVideoLoaded}
+          className={`px-4 py-2 rounded font-medium flex items-center ${
+            !canPlay
+              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              : isPlaying
+              ? 'bg-gray-300 text-gray-700'
+              : 'bg-blue-600 text-white hover:bg-blue-700'
+          }`}
+          onClick={togglePlayPause}
+          disabled={!canPlay}
         >
-          {isPlaying ? 'Pause' : 'Play'}
+          {isPlaying ? (
+            <>
+              <svg
+                className="w-4 h-4 mr-1"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Pause
+            </>
+          ) : (
+            <>
+              <svg
+                className="w-4 h-4 mr-1"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Play
+            </>
+          )}
         </button>
-  
+
         {/* Seek Bar Container */}
-        <div className="flex-1 mx-4 flex items-center space-x-2">
+        <div className="flex-1 flex items-center space-x-2">
           {/* Current Time */}
-          <span className="text-white text-sm">
-            {formatTime(currentTime)}
-          </span>
-  
+          <span className="text-white text-sm">{formatTime(currentTime)}</span>
+
           {/* Seek Bar */}
           <div className="flex-1">
             <input
               type="range"
               min="0"
-              max="100"
-              value={seekValue}
+              max={duration || 100}
+              value={currentTime}
               onChange={handleSeek}
               className="w-full h-2 bg-gray-400 rounded-full appearance-none cursor-pointer"
               style={{
-                background: `linear-gradient(to right, #4caf50 ${seekValue}%, #808080 ${seekValue}%)`,
+                background: `linear-gradient(to right, #4caf50 ${calculateSeekPercentage()}%, #808080 ${calculateSeekPercentage()}%)`,
               }}
-              disabled={!isVideoLoaded}
+              disabled={!canPlay}
+              step="0.01"
             />
           </div>
-  
+
           {/* Total Duration */}
-          <span className="text-white text-sm">
-            {formatTime(duration)}
-          </span>
+          <span className="text-white text-sm">{formatTime(duration)}</span>
         </div>
+
+        <DraggableWindow />
+        <DraggableVideoWindow video={videoUrl} />
       </div>
     </div>
   );
-  
-  
 };
 
 export default RecordVideoPlayer;

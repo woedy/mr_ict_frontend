@@ -5,6 +5,7 @@ import RecEditor from './RecEditor';
 import RecSidebar from './RecSideBar';
 import RecHeader from './RecHeader';
 import axios from 'axios'; // Axios for making HTTP requests
+import RecDraggableWindow from './RecDraggableWindow';
 
 const RecordLessonPage = () => {
   const [permissionError, setPermissionError] = useState(false);
@@ -174,12 +175,9 @@ const RecordLessonPage = () => {
                 placeholder="Description"
               />
             </div>
-
-  
           </>
         ) : (
           <div></div>
-     
         )}
       </div>
       <RecHeader
@@ -190,10 +188,14 @@ const RecordLessonPage = () => {
       />
       <div className="flex flex-1">
         <RecSidebar />
-        <RecEditor  isRecording={isRecording && isScreenRecordingStarted} title={recordingTitle}  getCurrentTimestamp={getCurrentTimestamp}
+        <RecEditor
+          isRecording={isRecording && isScreenRecordingStarted}
+          title={recordingTitle}
+          getCurrentTimestamp={getCurrentTimestamp}
         />
       </div>
       <RecStatusBar />
+      <RecDraggableWindow />
     </div>
   );
 };

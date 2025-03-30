@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import RecDraggableWindow from '../VideoTutorial/RecLesson/RecDraggableWindow';
 
-const MonacoEditorWithPiston = () => {
-  const [code, setCode] = useState('');
+const MonacoEditorWithOutput = () => {
+  const [code, setCode] = useState('console.log("Hello, World!");');
   const [output, setOutput] = useState('');
-  const [language, setLanguage] = useState('');
+  const [language, setLanguage] = useState('javascript');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [theme, setTheme] = useState('vs-dark');
@@ -17,30 +17,54 @@ const MonacoEditorWithPiston = () => {
 
   // Initial language options for UI (will be updated with runtime info)
   const languageUI = [
+    { value: 'javascript', label: 'JavaScript', monacoLang: 'javascript' },
+    { value: 'python', label: 'Python', monacoLang: 'python' },
+    { value: 'java', label: 'Java', monacoLang: 'java' },
+    { value: 'c', label: 'C', monacoLang: 'c' },
+    { value: 'cpp', label: 'C++', monacoLang: 'cpp' },
+    { value: 'csharp', label: 'C#', monacoLang: 'csharp' },
+    { value: 'php', label: 'PHP', monacoLang: 'php' },
+    { value: 'ruby', label: 'Ruby', monacoLang: 'ruby' },
+    { value: 'go', label: 'Go', monacoLang: 'go' },
+    { value: 'rust', label: 'Rust', monacoLang: 'rust' },
     { value: 'html', label: 'HTML', monacoLang: 'html' }
   ];
 
   // Sample default code for different languages
   const defaultCode = {
+    javascript: 'console.log("Hello, World!");',
+    python: 'print("Hello, World!")',
+    java: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
+    c: '#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}',
+    cpp: '#include <iostream>\n\nint main() {\n    std::cout << "Hello, World!" << std::endl;\n    return 0;\n}',
+    csharp: 'using System;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello, World!");\n    }\n}',
+    php: '<?php\necho "Hello, World!";\n?>',
+    ruby: 'puts "Hello, World!"',
+    go: 'package main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello, World!")\n}',
+    rust: 'fn main() {\n    println!("Hello, World!");\n}',
     html: '<!DOCTYPE html>\n<html>\n<head>\n    <title>Hello World</title>\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            margin: 0;\n            padding: 20px;\n            background-color: #f0f0f0;\n        }\n        h1 {\n            color: #333;\n        }\n        .container {\n            background-color: white;\n            padding: 20px;\n            border-radius: 5px;\n            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\n        }\n    </style>\n</head>\n<body>\n    <div class="container">\n        <h1>Hello, World!</h1>\n        <p>This is a simple HTML page.</p>\n        <button onclick="alert(\'Button clicked!\')">Click Me</button>\n    </div>\n</body>\n</html>'
   };
 
-
-
   // Map our language values to Piston language names
   const languageMap = {
+    javascript: ['javascript', 'js', 'node', 'nodejs'],
+    python: ['python', 'py', 'python3'],
+    java: ['java'],
+    c: ['c'],
+    cpp: ['cpp', 'c++'],
+    csharp: ['csharp', 'cs', 'dotnet'],
+    php: ['php'],
+    ruby: ['ruby'],
+    go: ['go', 'golang'],
+    rust: ['rust'],
     html: ['html']
   };
 
   // When the component mounts and language is HTML, set the initial HTML output
   useEffect(() => {
-    setLanguage('html');
-    setCode(defaultCode.html);
     if (language === 'html') {
       setHtmlOutput(code);
-   
     }
-  
   }, []);
 
   // Fetch available runtimes from Piston API
@@ -100,7 +124,19 @@ const MonacoEditorWithPiston = () => {
     return null;
   };
 
-
+  // Handle language change
+  const handleLanguageChange = (e) => {
+    const newLanguage = e.target.value;
+    setLanguage(newLanguage);
+    const newCode = defaultCode[newLanguage] || '';
+    setCode(newCode);
+    
+    // If switching to HTML, update the HTML output and show the preview
+    if (newLanguage === 'html') {
+      setHtmlOutput(newCode);
+      setShowPreviewWindow(true);
+    }
+  };
 
   const handleEditorChange = (value) => {
     setCode(value || '');
@@ -190,7 +226,9 @@ const MonacoEditorWithPiston = () => {
     }
   };
 
-
+  const toggleTheme = () => {
+    setTheme(theme === 'vs-dark' ? 'light' : 'vs-dark');
+  };
 
   // Get Monaco language for the editor
   const getMonacoLanguage = () => {
@@ -203,8 +241,23 @@ const MonacoEditorWithPiston = () => {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold text-gray-800">Code Editor</h1>
         <div className="flex items-center space-x-2">
-         
-        
+          <select
+            value={language}
+            onChange={handleLanguageChange}
+            className="px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {languageUI.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={toggleTheme}
+            className="px-3 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 transition text-sm"
+          >
+            Toggle Theme
+          </button>
           <button
             onClick={handleRunCode}
             disabled={isLoading || isLoadingRuntimes}
@@ -220,7 +273,14 @@ const MonacoEditorWithPiston = () => {
                 ? 'Running...' 
                 : 'Run Code'}
           </button>
-       
+          {language === 'html' && (
+            <button
+              onClick={() => setShowPreviewWindow(!showPreviewWindow)}
+              className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 transition text-sm"
+            >
+              {showPreviewWindow ? 'Hide Preview' : 'Show Preview'}
+            </button>
+          )}
         </div>
       </div>
 
@@ -273,7 +333,22 @@ const MonacoEditorWithPiston = () => {
               </pre>
             )}
             
-   
+            {language === 'html' && !showPreviewWindow && (
+              <div className="p-4">
+                <p className="text-gray-500">
+                  HTML preview is displayed in the separate window. 
+                  <button 
+                    onClick={() => setShowPreviewWindow(true)} 
+                    className="ml-2 text-blue-500 underline"
+                  >
+                    Show Preview
+                  </button>
+                </p>
+                <pre className="p-4 font-mono text-sm whitespace-pre-wrap mt-4 bg-gray-50 border rounded">
+                  {output || code}
+                </pre>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -291,4 +366,4 @@ const MonacoEditorWithPiston = () => {
   );
 };
 
-export default MonacoEditorWithPiston;
+export default MonacoEditorWithOutput;

@@ -8,24 +8,36 @@ import axios from 'axios';
 
 
 
-const handleEditorChange = (value, event) => {
-  console.log('Editor Content:', value);
-  //sendSnapshotNow();
-};
+const TuEditor = ({ value, onEditorInteraction }) => {
+  const handleEditorChange = (value, event) => {
+    console.log('Editor Content:', value);
+    // Call the function to pause the video when user types
+    if (onEditorInteraction) {
+      onEditorInteraction();
+    }
+  };
 
-const TuEditor = () => {
-    return (
-      <main className="flex-1 bg-gray-900 text-black">
+  return (
+    <main className="flex-1 bg-gray-900 text-black">
       <Editor
-        defaultLanguage="html" // Set the default language to HTML
-        defaultValue="<!-- Write your HTML code here -->"
+        value={value}
+        language="html"
+        height='100%'
         onChange={handleEditorChange}
         theme='vs-dark'
         //onMount={handleEditorDidMount}
+        options={{
+          minimap: { enabled: false },
+          fontSize: 16,
+          scrollBeyondLastLine: false,
+          wordWrap: 'on',
+          automaticLayout: true,
+          readOnly: false
+        }}
       />
     </main>
-    );
-  };
-  
-  export default TuEditor;
+  );
+};
+
+export default TuEditor;
   
