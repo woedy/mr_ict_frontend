@@ -95,6 +95,15 @@ const SignIn: React.FC = () => {
     }
   };
 
+
+  const handleSubmit2 = async (e) => {
+    e.preventDefault();
+
+    navigate('/dashboard');
+    window.location.reload();
+   
+  };
+
   return (
     <>
       <div className="min-h-screen bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
@@ -136,7 +145,7 @@ const SignIn: React.FC = () => {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit2} className="space-y-6">
               {/* Email Input */}
               <div>
                 <label
@@ -233,5 +242,8 @@ const SignIn: React.FC = () => {
     </>
   );
 };
+
+
+
 
 export default SignIn;

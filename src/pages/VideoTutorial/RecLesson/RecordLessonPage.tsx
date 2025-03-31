@@ -155,31 +155,32 @@ const RecordLessonPage = () => {
         </div>
       )}
 
-      <div className="flex space-x-2">
-        {!isRecording ? (
-          <>
-            <div>
-              <input
-                type="text"
-                value={recordingTitle}
-                onChange={(e) => setRecordingTitle(e.target.value)}
-                className="border rounded px-3 py-2"
-                placeholder="Recording Title"
-              />
+<div className="flex space-x-4">
+  {!isRecording ? (
+    <>
+      <div className="flex space-x-4 m-4">
+        <input
+          type="text"
+          value={recordingTitle}
+          onChange={(e) => setRecordingTitle(e.target.value)}
+          className="border border-gray-300 rounded-lg px-4 py-2 w-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Recording Title"
+        />
 
-              <input
-                type="text"
-                value={recordingDescription}
-                onChange={(e) => setRecordingDescription(e.target.value)}
-                className="border rounded px-3 py-2"
-                placeholder="Description"
-              />
-            </div>
-          </>
-        ) : (
-          <div></div>
-        )}
+        <input
+          type="text"
+          value={recordingDescription}
+          onChange={(e) => setRecordingDescription(e.target.value)}
+          className="border border-gray-300 rounded-lg px-4 py-2 w-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Description"
+        />
       </div>
+    </>
+  ) : (
+    <div></div>
+  )}
+</div>
+
       <RecHeader
         isRecording={isRecording && isScreenRecordingStarted}
         handleStartRecording={handleStartRecording}

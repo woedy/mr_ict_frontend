@@ -29,6 +29,9 @@ const RecordVideoPlayer = () => {
   const [showPreviewWindow, setShowPreviewWindow] = useState(true);
   const [editedCode, setEditedCode] = useState('');
 
+
+  const [isSeeking, setIsSeeking] = useState(false); // Add isSeeking state
+
   // Fetch data from server
   useEffect(() => {
     const fetchData = async () => {
@@ -150,15 +153,15 @@ const RecordVideoPlayer = () => {
   };
 
   // Handle seeking in the video
+  // Handle seeking in the video
   const handleSeek = (e) => {
     if (!videoRef.current) return;
 
     const seekTime = parseFloat(e.target.value);
     videoRef.current.currentTime = seekTime;
     setCurrentTime(seekTime);
-
-    // Immediately update code to match the new position
     syncCodeWithTime(seekTime);
+    setIsSeeking(true); // Set seeking flag to true
   };
 
   // Sync play/pause state with video events
@@ -183,9 +186,12 @@ const RecordVideoPlayer = () => {
 
   // Handle timeupdate event to keep UI in sync with video position
   const handleTimeUpdate = () => {
-    if (videoRef.current && !isPlaying) {
+    if (videoRef.current && !isPlaying && !isSeeking) {
       setCurrentTime(videoRef.current.currentTime);
       syncCodeWithTime(videoRef.current.currentTime);
+    }
+    if (isSeeking && Math.abs(videoRef.current.currentTime - currentTime) <0.1){
+        setIsSeeking(false);
     }
   };
 

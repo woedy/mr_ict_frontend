@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import userImage from '../../images/user/user-01.png';
+import html from '../../images/html.png';
 
 import { Link } from 'react-router-dom';
 import {
@@ -67,9 +68,9 @@ const Course: React.FC = () => {
                   {/* Left Side: Square background with Round Image */}
                   <div className="w-15 h-15 bg-primary rounded-xl flex justify-center items-center shadow-lg overflow-hidden">
                     <img
-                      src={userImage}
+                      src={html}
                       alt="User Photo"
-                      className="w-12 h-12 object-cover rounded-full"
+                      className="w-12 h-12 object-contain"
                     />
                   </div>
 

@@ -16,7 +16,6 @@ import CourseLessonsRecord from './pages/VideoTutorial/CourseLessonsRecord.tsx';
 import RecordLessonPage from './pages/VideoTutorial/RecLesson/RecordLessonPage.tsx';
 import RecordVideoPlayer from './pages/VideoTutorial/RecordVideoPlayer.tsx';
 import VideoEditor from './pages/VideoEditor/VideoEditor.tsx';
-import PlayVideoEditor from './pages/PlayGround/PlayVideoEditor.tsx';
 
 const hiddenOnRoutes = [
   '/',
@@ -162,15 +161,6 @@ function App() {
         />
 
 
-<Route
-          path="/play-video-editor"
-          element={
-            <>
-              <PageTitle title="Play Video Editor | <Mr ICT />" />
-              <PlayVideoEditor />
-            </>
-          }
-        />
       </Routes>
     </>
   );

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import userImage from '../../images/user/user-01.png';
+import html from '../../images/html.png';
 
 import { Link } from 'react-router-dom';
 import {
@@ -65,7 +66,7 @@ const CourseLessonsRecord: React.FC = () => {
   return (
     <>
       <div className="max-w-7xl mx-auto px-6 py-12">
-        <h4 className="text-2xl font-semibold text-black dark:text-white mb-8">
+        <h4 className="text-2xl font-semibold text-black dark:text-black mb-8">
           HTML Course
         </h4>
         <Link to={'/record-lesson-page'} >
@@ -81,11 +82,11 @@ const CourseLessonsRecord: React.FC = () => {
             <Link to="/record-player" key={index}>
               <div className="rounded-2xl bg-white shadow-lg dark:bg-boxdark dark:border-strokedark p-4 flex items-center space-x-4 hover:shadow-2xl transition duration-300">
                 {/* Left Side: Square background with Round Image */}
-                <div className="w-16 h-16 bg-primary rounded-xl flex justify-center items-center shadow-lg overflow-hidden">
+                <div className="w-10 h-10 bg-primary rounded-xl flex justify-center items-center shadow-lg overflow-hidden">
                   <img
-                    src={userImage}
+                    src={html}
                     alt="User Photo"
-                    className="w-14 h-14 object-cover rounded-full"
+                    className="w-10 h-10 object-contain"
                   />
                 </div>
   

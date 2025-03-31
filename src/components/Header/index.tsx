@@ -2,6 +2,9 @@ import DropdownMessage from './DropdownMessage';
 import DropdownNotification from './DropdownNotification';
 import DarkModeSwitcher from './DarkModeSwitcher';
 import userImage from '../../images/user/user-01.png';
+import student from '../../images/user/student.png';
+import gold from '../../images/gold.png';
+import badge from '../../images/badge.png';
 
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
@@ -26,7 +29,7 @@ const Header = (props: {
             {/* Stats */}
             <div className="flex-2 text-center">
               <img
-                src={userImage}
+                src={gold}
                 alt="User Photo"
                 className="w-6 h-6 object-cover rounded-full justify-center"
               />
@@ -42,7 +45,7 @@ const Header = (props: {
             <div className="flex-2">
               <div className="h-[180px] w-[180px] md:h-[150px] md:w-[150px] rounded-full overflow-hidden ring-4 ring-blue-100 dark:ring-blue-900/30 shadow-lg border-b-2 border-blue-500">
                 <img
-                  src={userImage}
+                  src={student}
                   alt="User Photo"
                   className="h-full w-full object-cover"
                 />
@@ -66,7 +69,7 @@ const Header = (props: {
                   className="h-[50px] w-[50px] rounded-full overflow-hidden border-2 border-white dark:border-gray-800 shadow-md hover:scale-105 transition-transform duration-200"
                 >
                   <img
-                    src={userImage}
+                    src={badge}
                     alt={`Friend ${index + 1}`}
                     className="h-full w-full object-cover"
                   />

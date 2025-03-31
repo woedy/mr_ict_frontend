@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import userImage from '../../images/user/user-01.png';
+import html from '../../images/html.png';
+import css from '../../images/css.png';
+import python from '../../images/python.png';
+import javascript from '../../images/javascript.png';
 
 import { Link } from 'react-router-dom';
 import {
@@ -79,9 +83,9 @@ const AllCourses: React.FC = () => {
                 {/* Left Side: Square background with Round Image */}
                 <div className="w-20 h-20 bg-primary rounded-xl flex justify-center items-center shadow-lg overflow-hidden">
                   <img
-                    src={userImage}
+                    src={html}
                     alt="User Photo"
-                    className="w-16 h-16 object-cover rounded-full"
+                    className="w-16 h-16 object-contain"
                   />
                 </div>
 
@@ -103,16 +107,16 @@ const AllCourses: React.FC = () => {
                 {/* Left Side: Square background with Round Image */}
                 <div className="w-20 h-20 bg-primary rounded-xl flex justify-center items-center shadow-lg overflow-hidden">
                   <img
-                    src={userImage}
+                    src={css}
                     alt="User Photo"
-                    className="w-16 h-16 object-cover rounded-full"
+                    className="w-16 h-16 object-contain"
                   />
                 </div>
 
                 {/* Content Section */}
                 <div className="flex flex-col ml-6 space-y-2">
                   <p className="text-lg font-semibold text-gray-800 dark:text-white">
-                    HTML
+                    Css
                   </p>
                   <p className="">The language for building web pages</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -125,16 +129,16 @@ const AllCourses: React.FC = () => {
                 {/* Left Side: Square background with Round Image */}
                 <div className="w-20 h-20 bg-primary rounded-xl flex justify-center items-center shadow-lg overflow-hidden">
                   <img
-                    src={userImage}
+                    src={javascript}
                     alt="User Photo"
-                    className="w-16 h-16 object-cover rounded-full"
+                    className="w-16 h-16 object-contain"
                   />
                 </div>
 
                 {/* Content Section */}
                 <div className="flex flex-col ml-6 space-y-2">
                   <p className="text-lg font-semibold text-gray-800 dark:text-white">
-                    HTML
+                  Javascript
                   </p>
                   <p className="">The language for building web pages</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -147,16 +151,16 @@ const AllCourses: React.FC = () => {
                 {/* Left Side: Square background with Round Image */}
                 <div className="w-20 h-20 bg-primary rounded-xl flex justify-center items-center shadow-lg overflow-hidden">
                   <img
-                    src={userImage}
+                    src={python}
                     alt="User Photo"
-                    className="w-16 h-16 object-cover rounded-full"
+                    className="w-16 h-16 object-contain"
                   />
                 </div>
 
                 {/* Content Section */}
                 <div className="flex flex-col ml-6 space-y-2">
                   <p className="text-lg font-semibold text-gray-800 dark:text-white">
-                    HTML
+                    Pyton
                   </p>
                   <p className="">The language for building web pages</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -165,27 +169,7 @@ const AllCourses: React.FC = () => {
                 </div>
               </div>
 
-              <div className="rounded-2xl bg-white shadow-lg dark:bg-boxdark dark:border-strokedark p-5 flex items-center">
-                {/* Left Side: Square background with Round Image */}
-                <div className="w-20 h-20 bg-primary rounded-xl flex justify-center items-center shadow-lg overflow-hidden">
-                  <img
-                    src={userImage}
-                    alt="User Photo"
-                    className="w-16 h-16 object-cover rounded-full"
-                  />
-                </div>
-
-                {/* Content Section */}
-                <div className="flex flex-col ml-6 space-y-2">
-                  <p className="text-lg font-semibold text-gray-800 dark:text-white">
-                    HTML
-                  </p>
-                  <p className="">The language for building web pages</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    50 Lessons
-                  </p>
-                </div>
-              </div>
+       
             </div>
           </div>
         </div>
