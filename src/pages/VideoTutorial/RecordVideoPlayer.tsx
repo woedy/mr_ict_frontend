@@ -1,10 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
-import TutorialPage from './RecPlayEditor/TutorialPage';
 import { Link } from 'react-router-dom';
 import Logo from '../../images/logo/coat.png';
 import axios from 'axios';
-import DraggableWindow from './RecPlayEditor/DraggableWindow';
+import RecDraggableWindow from './RecLesson/RecDraggableWindow';
+import TutorialPage from './RecPlayEditor/TutorialPage';
 import DraggableVideoWindow from './RecPlayEditor/DraggableVideoWindow';
 
 const RecordVideoPlayer = () => {
@@ -23,6 +23,11 @@ const RecordVideoPlayer = () => {
   const [duration, setDuration] = useState(0);
   const videoRef = useRef(null);
   const requestAnimationRef = useRef(null);
+
+  // HTML Preview state
+  const [htmlOutput, setHtmlOutput] = useState('');
+  const [showPreviewWindow, setShowPreviewWindow] = useState(true);
+  const [editedCode, setEditedCode] = useState('');
 
   // Fetch data from server
   useEffect(() => {
@@ -43,6 +48,8 @@ const RecordVideoPlayer = () => {
         // Set initial code to the first snippet
         if (sortedSnippets.length > 0) {
           setCurrentCode(sortedSnippets[0].code_content);
+          setHtmlOutput(sortedSnippets[0].code_content); // Set initial HTML output
+          setEditedCode(sortedSnippets[0].code_content);
         }
 
         setIsLoading(false);
@@ -55,6 +62,12 @@ const RecordVideoPlayer = () => {
 
     fetchData();
   }, []);
+
+  // Update HTML output when current code changes
+  useEffect(() => {
+    // Assuming currentCode contains HTML code
+    setHtmlOutput(currentCode);
+  }, [currentCode]);
 
   // Handle code synchronization based on current time
   const syncCodeWithTime = (time) => {
@@ -73,6 +86,7 @@ const RecordVideoPlayer = () => {
     }
 
     setCurrentCode(appropriateSnippet.code_content);
+    setEditedCode(appropriateSnippet.code_content);
   };
 
   // Animation frame loop for smooth time tracking
@@ -244,6 +258,14 @@ const RecordVideoPlayer = () => {
     }
   };
 
+  const handleCodeChange = (newCode) => {
+    setEditedCode(newCode);
+  };
+
+  const runCode = () => {
+    setHtmlOutput(editedCode);
+  };
+
   if (isLoading) {
     return (
       <div className="w-full h-full flex items-center justify-center p-4">
@@ -275,7 +297,7 @@ const RecordVideoPlayer = () => {
       {/* Main content area - Fills available space */}
       <div className="flex-grow relative overflow-hidden">
         {/* Video container */}
-        <div className="absolute inset-0 translate-y-[-11px]">
+        <div className="absolute inset-0 translate-y-[-24px]">
           <video
             ref={videoRef}
             className="w-full h-full object-cover"
@@ -328,19 +350,23 @@ const RecordVideoPlayer = () => {
             isPlaying ? 'opacity-25' : 'opacity-100'
           } transition-opacity duration-300`}
         >
-          <TutorialPage value={currentCode} onEditorInteraction={pauseVideo} />
+          <TutorialPage
+            value={editedCode}
+            onEditorInteraction={pauseVideo}
+            onCodeChange={handleCodeChange}
+          />
         </div>
       </div>
 
       {/* Controls - Fixed at bottom */}
-      <div className="bg-black bg-opacity-50 p-3 flex items-center space-x-4 z-30 relative">
+      <div className="bg-black bg-opacity-50 px-2 py-1 flex items-center space-x-4 z-30 relative">
         {/* Play/Pause Button */}
         <button
-          className={`px-4 py-2 rounded font-medium flex items-center ${
+          className={`px-4 py-1 rounded font-medium text-xs flex items-center ${
             !canPlay
-              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              ? 'bg-white text-white cursor-not-allowed'
               : isPlaying
-              ? 'bg-gray-300 text-gray-700'
+              ? 'bg-green text-white'
               : 'bg-blue-600 text-white hover:bg-blue-700'
           }`}
           onClick={togglePlayPause}
@@ -349,7 +375,7 @@ const RecordVideoPlayer = () => {
           {isPlaying ? (
             <>
               <svg
-                className="w-4 h-4 mr-1"
+                className="w-3 h-3 mr-1"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -382,7 +408,7 @@ const RecordVideoPlayer = () => {
         {/* Seek Bar Container */}
         <div className="flex-1 flex items-center space-x-2">
           {/* Current Time */}
-          <span className="text-white text-sm">{formatTime(currentTime)}</span>
+          <span className="text-white text-xs">{formatTime(currentTime)}</span>
 
           {/* Seek Bar */}
           <div className="flex-1">
@@ -392,7 +418,7 @@ const RecordVideoPlayer = () => {
               max={duration || 100}
               value={currentTime}
               onChange={handleSeek}
-              className="w-full h-2 bg-gray-400 rounded-full appearance-none cursor-pointer"
+              className="w-full h-1 bg-gray-400 rounded-full appearance-none cursor-pointer"
               style={{
                 background: `linear-gradient(to right, #4caf50 ${calculateSeekPercentage()}%, #808080 ${calculateSeekPercentage()}%)`,
               }}
@@ -402,12 +428,49 @@ const RecordVideoPlayer = () => {
           </div>
 
           {/* Total Duration */}
-          <span className="text-white text-sm">{formatTime(duration)}</span>
+          <span className="text-white text-xs">{formatTime(duration)}</span>
         </div>
 
-        <DraggableWindow />
-        <DraggableVideoWindow video={videoUrl} />
+        {/* Run Code Button */}
+        <button
+          className="px-4 py-2 rounded text-xs font-medium flex items-center bg-green-600 text-white hover:bg-green-700"
+          onClick={runCode}
+        >
+          <svg
+            className="w-4 h-4 mr-1"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13 10V3L4 14h7v7l9-11h-7z"
+            />
+          </svg>
+          Run
+        </button>
+
+        {/* Preview Toggle Button */}
+        <button
+          className="px-4 py-1 rounded font-medium text-xs flex items-center bg-slate-50 text-gray-700 hover:bg-gray-400"
+          onClick={() => setShowPreviewWindow(!showPreviewWindow)}
+        >
+          {showPreviewWindow ? 'Hide Preview' : 'Show Preview'}
+        </button>
+
+        {/* Keep DraggableVideoWindow */}
+        <DraggableVideoWindow video={videoUrl} /> 
       </div>
+
+      {/* HTML Preview Window */}
+      {showPreviewWindow && (
+        <div className="absolute z-30">
+          <RecDraggableWindow htmlContent={htmlOutput} title="HTML Preview" />
+        </div>
+      )}
     </div>
   );
 };

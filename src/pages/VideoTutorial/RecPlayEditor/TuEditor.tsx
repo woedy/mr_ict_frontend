@@ -7,13 +7,13 @@ import axios from 'axios';
 
 
 
-
-const TuEditor = ({ value, onEditorInteraction }) => {
+const TuEditor = ({ value, onEditorInteraction, onChange }) => {
   const handleEditorChange = (value, event) => {
     console.log('Editor Content:', value);
     // Call the function to pause the video when user types
     if (onEditorInteraction) {
       onEditorInteraction();
+      onChange(value); // Pass the updated value back
     }
   };
 
@@ -22,17 +22,16 @@ const TuEditor = ({ value, onEditorInteraction }) => {
       <Editor
         value={value}
         language="html"
-        height='100%'
+        height="100%"
         onChange={handleEditorChange}
-        theme='vs-dark'
-        //onMount={handleEditorDidMount}
+        theme="vs-dark"
         options={{
           minimap: { enabled: false },
           fontSize: 16,
           scrollBeyondLastLine: false,
           wordWrap: 'on',
           automaticLayout: true,
-          readOnly: false
+          readOnly: false,
         }}
       />
     </main>

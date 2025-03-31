@@ -1,100 +1,45 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const DraggableVideoWindow = ({video}) => {
-  const [dragging, setDragging] = useState(false);
-  const [resizing, setResizing] = useState(false);
-  
-  // Calculate initial position at the left bottom of the screen
+const DraggableVideoWindow = ({ video }) => {
   const [position, setPosition] = useState({
-    x: 20, // 20px margin from the left
-    y: window.innerHeight - 200 - 20, // 200 is the initial height, 20 is margin
+    x: 20,
+    y: window.innerHeight - 200 - 50,
   });
-  
   const [size, setSize] = useState({ width: 300, height: 200 });
-  const [minimized, setMinimized] = useState(false);
-  const [originalState, setOriginalState] = useState(null); // Store original size and position
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [originalState, setOriginalState] = useState(null);
 
   const windowRef = useRef(null);
-  const dragStartPos = useRef({ x: 0, y: 0 });
-  const resizeStartPos = useRef({ x: 0, y: 0 });
-  const resizeStartSize = useRef({ width: 0, height: 0 });
 
-  const onDragStart = (e) => {
-    setDragging(true);
-    dragStartPos.current = { 
-      x: e.clientX - position.x, 
-      y: e.clientY - position.y 
-    };
-    e.preventDefault();
-  };
-
-  const onResizeStart = (e) => {
-    setResizing(true);
-    resizeStartPos.current = { x: e.clientX, y: e.clientY };
-    resizeStartSize.current = { width: size.width, height: size.height };
-    e.preventDefault();
-  };
-
-  const toggleMinimize = () => {
-    if (minimized) {
-      // Restore original size and position
-      setSize(originalState.size);
-      setPosition(originalState.position);
-      setMinimized(false);
-    } else {
-      // Store current size and position, then minimize
+  const handleWindowClick = () => {
+    if (!isZoomed) {
       setOriginalState({ size, position });
-      const minimizedHeight = 40; // Height when minimized
-      setSize({ width: size.width, height: minimizedHeight });
+      setSize({ width: window.innerWidth * 0.8, height: window.innerHeight * 0.8 });
       setPosition({
-        x: 0, // Bottom-left corner
-        y: window.innerHeight - minimizedHeight,
+        x: window.innerWidth * 0.1,
+        y: window.innerHeight * 0.1,
       });
-      setMinimized(true);
+      setIsZoomed(true);
     }
   };
 
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (dragging) {
-        // Directly update the DOM element's position
-        const newX = e.clientX - dragStartPos.current.x;
-        const newY = e.clientY - dragStartPos.current.y;
-        windowRef.current.style.left = `${newX}px`;
-        windowRef.current.style.top = `${newY}px`;
-      } else if (resizing && !minimized) {
-        requestAnimationFrame(() => {
-          const newWidth = resizeStartSize.current.width + (e.clientX - resizeStartPos.current.x);
-          const newHeight = resizeStartSize.current.height + (e.clientY - resizeStartPos.current.y);
-          
-          setSize({
-            width: Math.max(150, newWidth),
-            height: Math.max(minimized ? 40 : 100, newHeight),
-          });
-        });
+    const handleClickOutside = (e) => {
+      if (isZoomed && windowRef.current && !windowRef.current.contains(e.target)) {
+        setSize(originalState.size);
+        setPosition(originalState.position);
+        setIsZoomed(false);
       }
     };
 
-    const handleMouseUp = () => {
-      if (dragging) {
-        // Update the state with the final position after dragging ends
-        const rect = windowRef.current.getBoundingClientRect();
-        setPosition({ x: rect.left, y: rect.top });
-      }
-      setDragging(false);
-      setResizing(false);
-    };
-
-    if (dragging || resizing) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+    if (isZoomed) {
+      document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [dragging, resizing, minimized]);
+  }, [isZoomed, originalState]);
 
   return (
     <div
@@ -105,46 +50,17 @@ const DraggableVideoWindow = ({video}) => {
         left: `${position.x}px`,
         width: `${size.width}px`,
         height: `${size.height}px`,
-        transition: dragging || resizing ? 'none' : 'top 0.3s ease, left 0.3s ease, width 0.3s ease, height 0.3s ease',
+        transition: 'top 0.3s ease, left 0.3s ease, width 0.3s ease, height 0.3s ease',
+        zIndex: isZoomed ? 1000 : 10,
       }}
+      onClick={handleWindowClick}
     >
-      <div
-        className="flex justify-between items-center p-2 cursor-move bg-gray-200"
-        onMouseDown={onDragStart}
-      >
-        <span className="text-sm font-bold truncate">Video Window</span>
-        <button 
-          className="text-sm px-2 hover:bg-gray-300 rounded" 
-          onClick={toggleMinimize}
-          title={minimized ? "Maximize" : "Minimize"}
-        >
-          {minimized ? "□" : "—"}
-        </button>
+   
+      <div className="overflow-hidden object-cover" style={{ height: `${size.height - 40}px`  }}>
+        <video style={{ width: '100%', height: '100%', objectFit: 'contain' }} src={video} >
+          Your browser does not support the video tag.
+        </video>
       </div>
-      
-      {!minimized && (
-        <div className="p-4 overflow-auto" style={{ height: `${size.height - 40}px` }}>
-          <video
-            controls
-            style={{ width: '100%', height: 'auto' }}
-            src={video}
-          >
-            Your browser does not support the video tag.
-          </video>
-        </div>
-      )}
-      
-      {!minimized && (
-        <div
-          className="absolute bottom-0 right-0 cursor-se-resize w-5 h-5 bg-gray-300 opacity-70 hover:opacity-100"
-          onMouseDown={onResizeStart}
-          style={{ 
-            borderTop: '1px solid #ccc', 
-            borderLeft: '1px solid #ccc',
-            borderTopLeftRadius: '4px'
-          }}
-        ></div>
-      )}
     </div>
   );
 };
