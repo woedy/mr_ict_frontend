@@ -25,6 +25,7 @@ const RecEditor = ({ isRecording, title, getCurrentTimestamp }) => {
     if (!isRecording) {
       // Clear buffer when not recording
       codeBufferRef.current = [];
+      setCode("<!-- Write your HTML code here -->")
     }
   }, [isRecording]);
 
@@ -126,7 +127,7 @@ const RecEditor = ({ isRecording, title, getCurrentTimestamp }) => {
     editor.onDidChangeModelContent(() => {
       setCode(editor.getValue());
       captureSnapshot();
-    });
+    });z
 
     // Capture on cursor movement
     editor.onDidChangeCursorPosition((e) => {

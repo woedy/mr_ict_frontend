@@ -16,6 +16,10 @@ import CourseLessonsRecord from './pages/VideoTutorial/CourseLessonsRecord.tsx';
 import RecordLessonPage from './pages/VideoTutorial/RecLesson/RecordLessonPage.tsx';
 import RecordVideoPlayer from './pages/VideoTutorial/RecordVideoPlayer.tsx';
 import VideoEditor from './pages/VideoEditor/VideoEditor.tsx';
+import CodeEditorWithExternalFiles from './pages/Playground/ExternalCode.tsx';
+import CodeEditor from './pages/Playground/CodeEditor.tsx';
+import ProjectList from './pages/Playground/ProjectList.tsx';
+import EditorLayout from './pages/GPTEditor/EditorLayout.tsx';
 
 const hiddenOnRoutes = [
   '/',
@@ -27,6 +31,10 @@ const hiddenOnRoutes = [
   '/record-lesson-page',
   '/verify-user',
   '/course-lesson-record',
+  "/external-editor",
+  "/gpt-editor",
+  "/code-editor",
+  "/list-projects",
 ];
 
 function App() {
@@ -156,6 +164,42 @@ function App() {
             <>
               <PageTitle title="Video Editor | <Mr ICT />" />
               <VideoEditor />
+            </>
+          }
+        />
+        <Route
+          path="/external-editor"
+          element={
+            <>
+              <PageTitle title="External Editor | <Mr ICT />" />
+              <CodeEditorWithExternalFiles />
+            </>
+          }
+        />
+        <Route
+          path="/code-editor"
+          element={
+            <>
+              <PageTitle title="Code Editor | <Mr ICT />" />
+              <CodeEditor />
+            </>
+          }
+        />
+        <Route
+          path="/list-projects"
+          element={
+            <>
+              <PageTitle title="List Project Editor | <Mr ICT />" />
+              <ProjectList />
+            </>
+          }
+        />
+        <Route
+          path="/gpt-editor"
+          element={
+            <>
+              <PageTitle title="GPT Editor | <Mr ICT />" />
+              <EditorLayout />
             </>
           }
         />

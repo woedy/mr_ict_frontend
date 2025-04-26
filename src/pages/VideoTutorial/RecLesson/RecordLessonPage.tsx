@@ -6,6 +6,7 @@ import RecSidebar from './RecSideBar';
 import RecHeader from './RecHeader';
 import axios from 'axios'; // Axios for making HTTP requests
 import RecDraggableWindow from './RecDraggableWindow';
+import Uploading from './Uploading';
 
 const RecordLessonPage = () => {
   const [permissionError, setPermissionError] = useState(false);
@@ -114,6 +115,8 @@ const RecordLessonPage = () => {
   }, [isRecording]);
 
   const sendVideoToServer = async (blob) => {
+    setIsUploading(true);
+
     try {
       //console.log(startTimeRef.current);
       const formData = new FormData();
@@ -131,8 +134,11 @@ const RecordLessonPage = () => {
       );
 
       console.log('Video uploaded successfully:', response.data);
+      setIsUploading(false);
+      setRecordingDescription('')
     } catch (err) {
       console.error('Error uploading video:', err);
+      setIsUploading(false);
     }
   };
 
@@ -155,31 +161,31 @@ const RecordLessonPage = () => {
         </div>
       )}
 
-<div className="flex space-x-4">
-  {!isRecording ? (
-    <>
-      <div className="flex space-x-4 m-4">
-        <input
-          type="text"
-          value={recordingTitle}
-          onChange={(e) => setRecordingTitle(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2 w-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Recording Title"
-        />
+      <div className="flex space-x-4">
+        {!isRecording ? (
+          <>
+            <div className="flex space-x-4 m-4">
+              <input
+                type="text"
+                value={recordingTitle}
+                onChange={(e) => setRecordingTitle(e.target.value)}
+                className="border border-gray-300 rounded-lg px-4 py-2 w-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Recording Title"
+              />
 
-        <input
-          type="text"
-          value={recordingDescription}
-          onChange={(e) => setRecordingDescription(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2 w-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Description"
-        />
+              <input
+                type="text"
+                value={recordingDescription}
+                onChange={(e) => setRecordingDescription(e.target.value)}
+                className="border border-gray-300 rounded-lg px-4 py-2 w-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Description"
+              />
+            </div>
+          </>
+        ) : (
+          <div></div>
+        )}
       </div>
-    </>
-  ) : (
-    <div></div>
-  )}
-</div>
 
       <RecHeader
         isRecording={isRecording && isScreenRecordingStarted}
@@ -197,6 +203,7 @@ const RecordLessonPage = () => {
       </div>
       <RecStatusBar />
       <RecDraggableWindow />
+      {isUploading && <Uploading />}
     </div>
   );
 };

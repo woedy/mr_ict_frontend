@@ -14,7 +14,12 @@ module.exports = {
       '3xl': '2000px',
       ...defaultTheme.screens,
     },
+  
     extend: {
+      userSelect: {
+        'none': 'none', // This will add the `user-select: none;` class
+      },
+      
       colors: {
         current: 'currentColor',
         transparent: 'transparent',
@@ -252,6 +257,7 @@ module.exports = {
         'spin-2': 'spin 2s linear infinite',
         'spin-3': 'spin 3s linear infinite',
       },
+    
     },
   },
   plugins: [],
