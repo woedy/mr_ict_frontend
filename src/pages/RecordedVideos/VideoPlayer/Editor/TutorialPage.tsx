@@ -1,9 +1,9 @@
 // src/App.jsx
 import React from 'react';
-import TuHeader from './TuHeader';
 import TuSidebar from './TuSideBar';
-import TuEditor from './TuEditor';
 import TuStatusBar from './TuStatus';
+import TuHeader from './TuHeader';
+import TuEditor from './TuEditor';
 
 const TutorialPage = ({ value, onEditorInteraction, onCodeChange }) => {
   const handleEditorChange = (value) => {

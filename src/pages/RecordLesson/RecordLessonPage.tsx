@@ -1,12 +1,12 @@
 // src/App.jsx
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import RecStatusBar from './RecStatus';
-import RecEditor from './RecEditor';
-import RecSidebar from './RecSideBar';
-import RecHeader from './RecHeader';
+import RecStatusBar from './Editor/RecStatus';
+import RecEditor from './Editor/RecEditor';
+import RecSidebar from './Editor/RecSideBar';
+import RecHeader from './Editor/RecHeader';
 import axios from 'axios'; // Axios for making HTTP requests
-import RecDraggableWindow from './RecDraggableWindow';
-import Uploading from './Uploading';
+import RecDraggableWindow from './Components/RecDraggableWindow';
+import Uploading from './Components/Uploading';
 
 const RecordLessonPage = () => {
   const [permissionError, setPermissionError] = useState(false);

@@ -52,14 +52,6 @@ export default function TopToolbar() {
     }
   };
 
-  const handleCheckerboard = () => {
-    const selectedAssets = assets.slice(0, Math.min(assets.length, 3)); // Example: Use first 3 assets
-    if (selectedAssets.length === 0) return;
-
-    const trackType = selectedAssets[0].type;
-    const trackId = useEditorStore.getState().timelineTracks[trackType][0].id;
-    checkerboardClips(trackType, trackId, selectedAssets, 0, Number(checkerboardGap));
-  };
 
   return (
     <div className="bg-white px-4 py-2 border-b border-gray-300 flex gap-4">
@@ -79,24 +71,7 @@ export default function TopToolbar() {
       >
         Redo
       </button>
-      <div className="flex items-center gap-2">
-        <button
-          onClick={handleCheckerboard}
-          className="text-sm bg-purple-500 text-black px-2 py-1 rounded"
-        >
-          Checkerboard
-        </button>
-        <input
-          type="number"
-          min={-1}
-          max={5}
-          step={0.1}
-          value={checkerboardGap}
-          onChange={(e) => setCheckerboardGap(e.target.value)}
-          className="w-16 text-sm border rounded px-2"
-          placeholder="Gap (s)"
-        />
-      </div>
+
     </div>
   );
 }

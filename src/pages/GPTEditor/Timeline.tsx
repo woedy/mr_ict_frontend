@@ -2,7 +2,7 @@ import { useRef, useEffect, useState, useMemo } from 'react';
 import useEditorStore from './_store/editorStore';
 import Track from './Track';
 
-export default function Timeline({ videoRef, audioRef, duration }) {
+export default function Timeline({ videoRef, duration }) {
   const { 
     timelineTracks, 
     zoom, 
@@ -76,7 +76,6 @@ export default function Timeline({ videoRef, audioRef, duration }) {
     setCurrentTime(newTime);
 
     if (videoRef?.current) videoRef.current.currentTime = newTime;
-    if (audioRef?.current) audioRef.current.currentTime = newTime;
   };
 
   const handleMouseDown = (e) => {
@@ -147,10 +146,10 @@ export default function Timeline({ videoRef, audioRef, duration }) {
   const togglePlayPause = () => {
     if (isPlaying) {
       videoRef?.current?.pause();
-      audioRef?.current?.pause();
+    
     } else {
       videoRef?.current?.play();
-      audioRef?.current?.play();
+    
     }
     setIsPlaying(!isPlaying);
   };
@@ -172,10 +171,10 @@ export default function Timeline({ videoRef, audioRef, duration }) {
 
   return (
     <div className="flex flex-col">
-      <div className="flex items-center justify-between p-2 bg-gray-100 border-b">
+      <div className="flex items-center justify-between p-2 bg-bodydark2 border-b">
         <div className="flex items-center space-x-2">
           <button 
-            className="p-1 rounded bg-gray-200 hover:bg-gray-300"
+            className="p-1 rounded bg-gray-200 hover:bg-gray"
             onClick={handleZoomOut}
             disabled={zoom === zoomLevels[0]}
           >
@@ -187,7 +186,7 @@ export default function Timeline({ videoRef, audioRef, duration }) {
           </div>
           
           <button 
-            className="p-1 rounded bg-gray-200 hover:bg-gray-300"
+            className="p-1 rounded bg-gray-200 hover:bg-gray"
             onClick={handleZoomIn}
             disabled={zoom === zoomLevels[zoomLevels.length - 1]}
           >
@@ -238,8 +237,8 @@ export default function Timeline({ videoRef, audioRef, duration }) {
       >
         <div
           ref={timelineRef}
-          className="relative bg-gray-50"
-          style={{ width: `${timelineWidth}px`, minWidth: '1000px' }}
+          className="relative bg-gray"
+          style={{ width: `${timelineWidth}px`, minWidth: '100%' }}
           onMouseDown={handleMouseDown}
         >
           {/* Playhead */}
@@ -256,7 +255,7 @@ export default function Timeline({ videoRef, audioRef, duration }) {
             {timeMarkers.filter(m => m.major).map((marker) => (
               <div 
                 key={marker.time} 
-                className="absolute top-0 bottom-0 border-l border-gray-200"
+                className="absolute top-0 bottom-0 border-l border-graydark"
                 style={{ left: `${marker.position}px` }}
               />
             ))}
@@ -295,7 +294,7 @@ export default function Timeline({ videoRef, audioRef, duration }) {
               <div className="flex justify-between items-center mb-2">
                 <h3 className="text-sm font-semibold text-gray-700">Audio Tracks</h3>
                 <button
-                  className="text-xs bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
+                  className="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
                   onClick={() => addTrack('audio')}
                 >
                   + Add Audio Track

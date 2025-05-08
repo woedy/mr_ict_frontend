@@ -1,11 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { Link } from 'react-router-dom';
-import Logo from '../../images/logo/coat.png';
+import Logo from '../../../images/logo/coat.png';
 import axios from 'axios';
-import RecDraggableWindow from './RecLesson/RecDraggableWindow';
-import TutorialPage from './RecPlayEditor/TutorialPage';
-import DraggableVideoWindow from './RecPlayEditor/DraggableVideoWindow';
+import RecDraggableWindow from '../../RecordLesson/Components/RecDraggableWindow';
+import DraggableVideoWindow from '../Components/DraggableVideoWindow';
+import TutorialPage from './Editor/TutorialPage';
 
 const RecordVideoPlayer = () => {
   // State for video and code data

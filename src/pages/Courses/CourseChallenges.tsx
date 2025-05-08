@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import userImage from '../../images/user/user-01.png';
 import html from '../../images/html.png';
 import css from '../../images/css.png';
 import python from '../../images/python.png';
@@ -15,7 +14,7 @@ import {
   userToken,
 } from '../../constants';
 
-const AllCourses: React.FC = () => {
+const CourseChallenges: React.FC = () => {
   const [generatedCount, setGeneratedCount] = useState(0);
   const [recentGenerated, setRecentGenerated] = useState([]);
 
@@ -59,11 +58,11 @@ const AllCourses: React.FC = () => {
         <div className="col-span-2">
           <div>
             <h4 className="text-xl font-semibold text-black dark:text-white mb-4 mt-9">
-              Available Courses
+             Course Challenges
             </h4>
 
             <div className="grid grid-cols-2 gap-5">
-              <Link to="/lessons">
+              <Link to="/challenges">
                 <div className="rounded-2xl bg-white shadow-lg dark:bg-boxdark dark:border-strokedark p-5 flex items-center">
                   {/* Left Side: Square background with Round Image */}
                   <div className="w-20 h-20 bg-primary rounded-xl flex justify-center items-center shadow-lg overflow-hidden">
@@ -81,7 +80,7 @@ const AllCourses: React.FC = () => {
                     </p>
                     <p className="">The language for building web pages</p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      50 Lessons
+                      50 Challenges
                     </p>
                   </div>
                 </div>
@@ -104,7 +103,7 @@ const AllCourses: React.FC = () => {
                   </p>
                   <p className="">The language for building web pages</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    50 Lessons
+                    50 Challenges
                   </p>
                 </div>
               </div>
@@ -126,7 +125,7 @@ const AllCourses: React.FC = () => {
                   </p>
                   <p className="">The language for building web pages</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    50 Lessons
+                    50 Challenges
                   </p>
                 </div>
               </div>
@@ -148,7 +147,7 @@ const AllCourses: React.FC = () => {
                   </p>
                   <p className="">The language for building web pages</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    50 Lessons
+                    50 Challenges
                   </p>
                 </div>
               </div>
@@ -160,4 +159,4 @@ const AllCourses: React.FC = () => {
   );
 };
 
-export default AllCourses;
+export default CourseChallenges;

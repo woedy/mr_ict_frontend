@@ -15,7 +15,7 @@ import {
   userToken,
 } from '../../constants';
 
-const AllCourses: React.FC = () => {
+const AllMyCourses: React.FC = () => {
   const [generatedCount, setGeneratedCount] = useState(0);
   const [recentGenerated, setRecentGenerated] = useState([]);
 
@@ -160,4 +160,4 @@ const AllCourses: React.FC = () => {
   );
 };
 
-export default AllCourses;
+export default AllMyCourses;

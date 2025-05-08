@@ -192,6 +192,7 @@ export default function ClipItem({ clip, index, trackId, trackType }) {
     document.addEventListener('mouseup', handleMouseUp);
   };
   
+  
   const handleContextMenu = (e) => {
     e.preventDefault();
     
@@ -246,13 +247,7 @@ export default function ClipItem({ clip, index, trackId, trackType }) {
           </div>
 
           <div className="flex gap-1 mt-auto">
-            <button 
-              onClick={() => splitClip(trackType, trackId, index)} 
-              className="bg-yellow-500 px-1 rounded text-[10px] hover:bg-yellow-600 transition-colors"
-              title="Split clip at playhead"
-            >
-              ✂️
-            </button>
+       
             <button 
               onClick={() => deleteClip(trackType, trackId, index)} 
               className="bg-red-600 px-1 rounded text-[10px] hover:bg-red-700 transition-colors"

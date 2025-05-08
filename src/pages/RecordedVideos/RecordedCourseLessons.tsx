@@ -12,7 +12,7 @@ import {
   userToken,
 } from '../../constants';
 
-const CourseLessonsRecord: React.FC = () => {
+const RecordedCourseLessons: React.FC = () => {
   const [generatedCount, setGeneratedCount] = useState(0);
   const [recentValidated, setRecentValidated] = useState([]);
 
@@ -116,4 +116,4 @@ const CourseLessonsRecord: React.FC = () => {
   
 };
 
-export default CourseLessonsRecord;
+export default RecordedCourseLessons;

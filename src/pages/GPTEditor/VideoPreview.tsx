@@ -1,11 +1,10 @@
 import { useEffect, useRef } from 'react';
 import useEditorStore from './_store/editorStore';
 
-export default function VideoPreview({ videoRef, audioRef, setDuration }) {
+export default function VideoPreview({ videoRef, audioRefs, setDuration }) {
   const { findActiveClip, currentTime, setCurrentTime } = useEditorStore();
   const activeVideoClip = findActiveClip('video');
   const activeAudioClips = findActiveClip('audio');
-  const audioRefs = useRef([]);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -76,6 +75,9 @@ export default function VideoPreview({ videoRef, audioRef, setDuration }) {
         audioRefs.current[index] = new Audio();
       }
     });
+
+
+    
   }, [currentTime, activeAudioClips]);
 
   useEffect(() => {

@@ -12,7 +12,7 @@ import {
   userToken,
 } from '../../constants';
 
-const Course: React.FC = () => {
+const Challenges: React.FC = () => {
   const [generatedCount, setGeneratedCount] = useState(0);
   const [recentGenerated, setRecentGenerated] = useState([]);
 
@@ -60,7 +60,7 @@ const Course: React.FC = () => {
         <div className="col-span-2">
           <div>
             <h4 className="text-xl font-semibold text-black dark:text-white mb-4 mt-9">
-              HTML Course
+              HTML Challenges
             </h4>
             {[...Array(10)].map((_, index) => (
               <Link to={'/lesson-page'}>
@@ -97,7 +97,7 @@ const Course: React.FC = () => {
         </div>
         <div className="col-span-1">
           <h4 className="text-xl font-semibold text-black dark:text-white mb-4">
-            About HTML
+            About HTML Challenges
           </h4>
           <div className="mt-4 grid grid-cols-1 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5 mb-4">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -120,4 +120,4 @@ const Course: React.FC = () => {
   );
 };
 
-export default Course;
+export default Challenges;

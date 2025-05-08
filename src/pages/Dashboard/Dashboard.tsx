@@ -169,7 +169,7 @@ const Dashboard: React.FC = () => {
             </h4>
 
             <div className="grid grid-cols-2 gap-5">
-              <Link to="/course">
+              <Link to="/lessons">
                 <div className="rounded-2xl bg-white shadow-lg dark:bg-boxdark dark:border-strokedark p-5 flex items-center">
                   {/* Left Side: Square background with Round Image */}
                   <div className="w-20 h-20 bg-primary rounded-xl flex justify-center items-center shadow-lg overflow-hidden">
@@ -250,7 +250,7 @@ const Dashboard: React.FC = () => {
                 {/* Content Section */}
                 <div className="flex flex-col ml-6 space-y-2">
                   <p className="text-lg font-semibold text-gray-800 dark:text-white">
-                    HTML
+                    PYTHON
                   </p>
                   <p className="">The language for building web pages</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -258,8 +258,6 @@ const Dashboard: React.FC = () => {
                   </p>
                 </div>
               </div>
-
-        
             </div>
           </div>
         </div>
@@ -330,8 +328,6 @@ const Dashboard: React.FC = () => {
                     className="w-5 h-5 object-contain ml-2"
                   />
                 </div>
-
-            
               </div>
             </div>
           </div>
@@ -397,8 +393,6 @@ const Dashboard: React.FC = () => {
                     className="w-5 h-5 object-contain ml-2"
                   />
                 </div>
-
-         
               </div>
             </div>
           </div>
@@ -464,13 +458,9 @@ const Dashboard: React.FC = () => {
                     className="w-5 h-5 object-contain ml-2"
                   />
                 </div>
-
-         
               </div>
             </div>
           </div>
-
-      
         </div>
       </div>
     </>

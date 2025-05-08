@@ -9,32 +9,29 @@ import DefaultLayout from './layout/DefaultLayout';
 import SignUp from './pages/Authentication/SignUp';
 import SignIn from './pages/Authentication/SignIn';
 import VerifyUser from './pages/Authentication/VerifyUser.tsx';
-import Course from './pages/Courses/Course.tsx';
-import LessonPage from './pages/Lesson/LessonPage.tsx';
+import Lessons from './pages/Courses/Lessons.tsx';
 import AllCourses from './pages/Courses/AllCourses.tsx';
-import CourseLessonsRecord from './pages/VideoTutorial/CourseLessonsRecord.tsx';
-import RecordLessonPage from './pages/VideoTutorial/RecLesson/RecordLessonPage.tsx';
-import RecordVideoPlayer from './pages/VideoTutorial/RecordVideoPlayer.tsx';
-import VideoEditor from './pages/VideoEditor/VideoEditor.tsx';
-import CodeEditorWithExternalFiles from './pages/Playground/ExternalCode.tsx';
-import CodeEditor from './pages/Playground/CodeEditor.tsx';
-import ProjectList from './pages/Playground/ProjectList.tsx';
+import RecordedCourseLessons from './pages/RecordedVideos/RecordedCourseLessons.tsx';
+import RecordLessonPage from './pages/RecordLesson/RecordLessonPage.tsx';
+import RecordVideoPlayer from './pages/RecordedVideos/VideoPlayer/RecordVideoPlayer.tsx';
+import CodeEditorWithExternalFiles from './pages/Projects/ExternalCode.tsx';
 import EditorLayout from './pages/GPTEditor/EditorLayout.tsx';
+import CourseChallenges from './pages/Courses/CourseChallenges.tsx';
+import Challenges from './pages/Courses/Challenges.tsx';
+import AllMyCourses from './pages/MyCourses/AllMyCourses.tsx';
 
 const hiddenOnRoutes = [
   '/',
   '/signup',
-  '/lesson-page',
-  '/record-player',
-  '/video-editor',
-  '/play-video-editor',
-  '/record-lesson-page',
   '/verify-user',
-  '/course-lesson-record',
-  "/external-editor",
-  "/gpt-editor",
-  "/code-editor",
-  "/list-projects",
+
+  '/record-lesson-page',
+  '/recorded-course-lessons',
+  '/record-player',
+
+  '/external-editor',
+
+  '/gpt-editor',
 ];
 
 function App() {
@@ -68,15 +65,6 @@ function App() {
         />
 
         <Route
-          path="/course"
-          element={
-            <>
-              <PageTitle title="Course - <Mr ICT />" />
-              <Course />
-            </>
-          }
-        />
-        <Route
           path="/all-courses"
           element={
             <>
@@ -85,21 +73,55 @@ function App() {
             </>
           }
         />
+
+        <Route
+          path="/lessons"
+          element={
+            <>
+              <PageTitle title="Lessons - <Mr ICT />" />
+              <Lessons />
+            </>
+          }
+        />
+
+        <Route
+          path="/course-challenges"
+          element={
+            <>
+              <PageTitle title="Course Challenges - <Mr ICT />" />
+              <CourseChallenges />
+            </>
+          }
+        />
+
+        <Route
+          path="/challenges"
+          element={
+            <>
+              <PageTitle title="Challenges - <Mr ICT />" />
+              <Challenges />
+            </>
+          }
+        />
+
+<Route
+          path="/all-my-courses"
+          element={
+            <>
+              <PageTitle title="My Courses - <Mr ICT />" />
+              <AllMyCourses />
+            </>
+          }
+        />
+
+
+
+
       </Routes>
     </DefaultLayout>
   ) : (
     <>
       <Routes>
-        <Route
-          path="/lesson-page"
-          element={
-            <>
-              <PageTitle title="Lesson Page | <Mr ICT />" />
-              <LessonPage />
-            </>
-          }
-        />
-
         <Route
           index
           element={
@@ -121,11 +143,11 @@ function App() {
         />
 
         <Route
-          path="/course-lesson-record"
+          path="/recorded-course-lessons"
           element={
             <>
               <PageTitle title="All Course - <Mr ICT />" />
-              <CourseLessonsRecord />
+              <RecordedCourseLessons />
             </>
           }
         />
@@ -158,15 +180,7 @@ function App() {
             </>
           }
         />
-        <Route
-          path="/video-editor"
-          element={
-            <>
-              <PageTitle title="Video Editor | <Mr ICT />" />
-              <VideoEditor />
-            </>
-          }
-        />
+
         <Route
           path="/external-editor"
           element={
@@ -176,24 +190,7 @@ function App() {
             </>
           }
         />
-        <Route
-          path="/code-editor"
-          element={
-            <>
-              <PageTitle title="Code Editor | <Mr ICT />" />
-              <CodeEditor />
-            </>
-          }
-        />
-        <Route
-          path="/list-projects"
-          element={
-            <>
-              <PageTitle title="List Project Editor | <Mr ICT />" />
-              <ProjectList />
-            </>
-          }
-        />
+
         <Route
           path="/gpt-editor"
           element={
@@ -203,8 +200,6 @@ function App() {
             </>
           }
         />
-
-
       </Routes>
     </>
   );
