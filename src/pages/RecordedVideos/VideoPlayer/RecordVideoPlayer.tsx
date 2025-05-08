@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { Link } from 'react-router-dom';
-import Logo from '../../../images/logo/coat.png';
+import Logo from '../../../images/logo/mrict_logo.jpg';
 import axios from 'axios';
 import RecDraggableWindow from '../../RecordLesson/Components/RecDraggableWindow';
 import DraggableVideoWindow from '../Components/DraggableVideoWindow';
@@ -291,14 +291,20 @@ const RecordVideoPlayer = () => {
   return (
     <div className="flex flex-col h-screen max-h-screen overflow-hidden">
       {/* Header - Fixed at top */}
-      <header className="bg-primary text-white p-3 flex justify-between items-center absolute top-0 left-0 right-0 z-20">
-        {/* Left Section: Logo and course info */}
-        <div className="flex items-center space-x-4">
-          <Link to={'/dashboard'}>
-            <img className="h-10" src={Logo} alt="Logo" />
-          </Link>
-        </div>
-      </header>
+      <header className="bg-boxdark text-white px-4 py-2 h-16 flex justify-between items-center absolute top-0 left-0 right-0 z-20">
+      {/* Left Section: Logo and course info */}
+      <div className="flex items-center space-x-4 flex-1">
+        <Link to="/dashboard">
+          <img className="h-10 rounded-md" src={Logo} alt="Logo" />
+        </Link>
+
+  
+      </div>
+
+
+
+    
+    </header>
 
       {/* Main content area - Fills available space */}
       <div className="flex-grow relative overflow-hidden">
